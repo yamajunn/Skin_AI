@@ -7,11 +7,12 @@ from torchvision.utils import make_grid
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
+from model import MyDatasets
+
 def show_tensor_images(image_flattened, num_images=25, size=(1, 28, 28)):
     image = image_flattened.detach().cpu().view(-1, *size) # 画像のサイズ1x28x28に戻す
     image_grid = make_grid(image[:num_images], nrow=5) # 画像を並べる
     plt.imshow(image_grid.permute(1, 2, 0).squeeze()) # 画像の表示
-    print("aaaaaaaaaa")
     plt.show()
 
 class GeneratorBlock(nn.Module):
@@ -84,15 +85,19 @@ beta_1 = 0.5
 beta_2 = 0.999
 num_of_epochs = 25
 device = 'cuda'
+directory = "SkinData"
+datasets = MyDatasets(directory)
 
 transform = transforms.Compose([transforms.ToTensor(),
                                 transforms.Normalize((0.5, ), (0.5, ))])
 
 dataloader = DataLoader(
     MNIST('.', download=True, transform=transform),
+    # datasets.createImgPathAndLabel(),
     batch_size=batch_size,
     shuffle=True
 )
+print(dataloader)
 
 image_channels = 1
 hidden_channles = 16
