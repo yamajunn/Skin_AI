@@ -1,50 +1,31 @@
-import torch
 from torch.utils.data import Dataset
-
-import os
-import random
+from torchvision import transforms
 from PIL import Image
+import os
 
-class MyDatasets(Dataset):
-    def __init__(self, directory = None, transform = None):
-        
-        self.directory = directory
+class CustomDataset(Dataset):
+    def __init__(self, root_dir, transform=None):
+        self.root_dir = root_dir
         self.transform = transform
-        self.label, self.label_to_index = self.findClasses()
-        self.img_path_and_label = self.createImgPathAndLabel()
+        self.classes = sorted(os.listdir(root_dir))
+        self.class_to_idx = {cls: i for i, cls in enumerate(self.classes)}
+        self.images = self.load_images()
+
+    def load_images(self):
+        images = []
+        for cls in self.classes:
+            class_path = os.path.join(self.root_dir, cls)
+            for img_name in os.listdir(class_path):
+                img_path = os.path.join(class_path, img_name)
+                images.append((img_path, self.class_to_idx[cls]))
+        return images
 
     def __len__(self):
-        return len(self.img_path_and_label)
+        return len(self.images)
 
-    def __getitem__(self, index):
-        img_path, label = self.img_path_and_label[index]
-        img = Image.open(img_path)
-
+    def __getitem__(self, idx):
+        img_path, label = self.images[idx]
+        image = Image.open(img_path).convert("RGB")
         if self.transform:
-            img = self.transform(img)
-        
-        return img, label
-
-    def findClasses(self):
-        classes = [d.name for d in os.scandir(self.directory)]
-        classes.sort()
-        class_to_index = {class_name: i for i, class_name in enumerate(classes)} # {'0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9}
-        return classes, class_to_index
-
-    def createImgPathAndLabel(self):
-        if self.directory:
-            img_path_and_labels = []
-            directory = os.path.expanduser(self.directory)
-            for target_label in sorted(self.label_to_index):
-                label_index = self.label_to_index[target_label]
-                target_dir = os.path.join(directory, target_label)
-
-                for root, _, file_names in sorted(os.walk(target_dir, followlinks = True)):
-                    for file_name in file_names:
-                        img_path = os.path.join(root, file_name)
-                        img_path_and_label = img_path, target_label
-                        img_path_and_labels.append(img_path_and_label)
-            
-            random.shuffle(img_path_and_labels)
-
-        return img_path_and_labels
+            image = self.transform(image)
+        return image, label

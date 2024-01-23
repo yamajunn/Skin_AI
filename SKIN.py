@@ -7,7 +7,7 @@ from torchvision.utils import make_grid
 from torch.utils.data import DataLoader
 import matplotlib.pyplot as plt
 
-from model import MyDatasets
+from model import CustomDataset
 
 def show_tensor_images(image_flattened, num_images=25, size=(1, 28, 28)):
     image = image_flattened.detach().cpu().view(-1, *size) # 画像のサイズ1x28x28に戻す
@@ -86,17 +86,20 @@ beta_2 = 0.999
 num_of_epochs = 25
 device = 'cuda'
 directory = "SkinData"
-datasets = MyDatasets(directory)
 
-transform = transforms.Compose([transforms.ToTensor(),
-                                transforms.Normalize((0.5, ), (0.5, ))])
+# 画像の前処理
+transform = transforms.Compose([
+    transforms.Resize((64, 64)),
+    transforms.ToTensor(),
+    transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+])
 
-dataloader = DataLoader(
-    MNIST('.', download=True, transform=transform),
-    # datasets.createImgPathAndLabel(),
-    batch_size=batch_size,
-    shuffle=True
-)
+# データセットの作成
+dataset = CustomDataset(root_dir='SkinData/', transform=transform)
+
+# データローダーの作成
+dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+
 print(dataloader)
 
 image_channels = 1
