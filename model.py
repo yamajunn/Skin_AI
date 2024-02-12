@@ -25,7 +25,9 @@ class CustomDataset(Dataset):
 
     def __getitem__(self, idx):
         img_path, label = self.images[idx]
-        image = Image.open(img_path).convert("RGB")
+        image = Image.open(img_path).convert("L")  # グレースケールに変換
+
         if self.transform:
             image = self.transform(image)
+
         return image, label
