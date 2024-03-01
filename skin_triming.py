@@ -1,7 +1,7 @@
 import os
 import cv2
 
-dir_path = "SkinData/2/"
+dir_path = "SkinData/3/0"
 
 files = os.listdir(dir_path)
 # print(files)
@@ -15,5 +15,5 @@ for num, file in enumerate(files):
     #         if int(b)+int(g)+int(r) == 0:
     #             img[i, j] = 255,255,255
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(f'SkinData/3/image{num}.png', img)
+    cv2.imwrite(f'SkinData/3/1/image{num}.png', img)
     # os.rename(f'SkinData/0/{file}', f"SkinData/1/image48.png")
