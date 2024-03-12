@@ -18,8 +18,10 @@ for num, file in enumerate(files):
     for i in range(h):
         for j in range(w):
             b, g, r, a = img[i, j]
-            if (32<= j and i <= 15) or (32 <= i <= 47) or (j <= 15 and 48 <= i) or (46 <= j and 48 <= i):
-                img[i, j] = [0, 0, 0, 0]
+            if int(b)+int(g)+int(r) == 0 and int(a) == 255:
+                img[i,j] = [1,1,1,255]
+            # if (32<= j and i <= 15) or (32 <= i <= 47) or (j <= 15 and 48 <= i) or (46 <= j and 48 <= i):
+            #     img[i, j] = [0, 0, 0, 0]
             # img = colorChanger(a, 0, [255,0,0,255], img,i,j)
 
     cv2.imwrite(f'SkinData/data/alex_blue/image{num}.png', img)
